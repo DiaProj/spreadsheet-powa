@@ -9,7 +9,7 @@ var env = process.env.NODE_ENV || 'development';
 
 app.config = require('./config')();
 
-setToken = function (token) {
+set_token = function (token) {
     var self = this;
 	
     if (token.type == 'GoogleLogin')
