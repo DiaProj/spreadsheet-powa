@@ -1,0 +1,60 @@
+{
+  "name": "spreadsheet-powa",
+  "version": "0.1.0",
+  "description": "Google Spreadsheet edit and query",
+  "keywords": [
+    "google",
+    "spreadsheet",
+	"edit",
+	"query",
+	"excel"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Automattic/spreadsheet-powa"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "dependencies": {
+    
+  },
+  "devDependencies": {
+    "mocha": "1.16.2",
+    "expect.js": "0.3.1",
+    "supertest": "0.8.2",
+    "superagent": "0.17.0",
+    "istanbul": "0.2.3"
+  },
+  "contributors": [
+    {
+      "name": "Evan Boissonnot",
+      "email": "evanboissonnot@gmail.com"
+    }
+  ],
+  "gitHead": "",
+  "bugs": {
+    "url": "https://github.com/Automattic/spreadsheet-powa/issues"
+  },
+  "homepage": "https://github.com/Automattic/spreadsheet-powa",
+  "_id": "spreadsheet-powa@0.1.0",
+  "_shasum": "",
+  "_from": "spreadsheet-powa@0.1.0",
+  "_npmVersion": "0.1.0",
+  "_npmUser": {
+    "name": "evanboissonnot",
+    "email": "evanboissonnot@gmail.com"
+  },
+  "maintainers": [
+    {
+      "name": "evanboissonnot",
+      "email": "evanboissonnot@gmail.com"
+    }
+  ],
+  "dist": {
+    "shasum": "02f00ffc24626294f46924d4c25ce35a9b940789",
+    "tarball": "http://registry.npmjs.org/spreadsheet-powa/-/spreadsheet-powa-0.1.0.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/spreadsheet-powa/-/spreadsheet-powa-0.1.0.tgz"
+}
