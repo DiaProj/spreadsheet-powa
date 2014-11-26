@@ -93,7 +93,21 @@ exports.prototype.connect = function(callback, error_callback) {
 	@params{error_callback}: Error callback
 */
 exports.prototype.prepare_database = function(options, callback, error_callback) {
-
+	//Url to use : worksheets/key/private/full
+	var self = this;	
+	var options = self.get_option_get('worksheets/' + options.id + '/private/full',
+									  self.config.current_token);
+									  
+	request_http(options, function(err, response, body) {
+		if (!err) {
+			parse_string(body, function (err, result) {
+				if(callback != null && typeof(callback) != 'undefined' && typeof(callback) === 'function')
+					callback(result);
+			});
+		} else if(error_callback != null && typeof(error_callback) != 'undefined' && typeof(error_callback) === 'function') {
+			error_callback(err);
+		}	
+	});
 };
 
 /*
