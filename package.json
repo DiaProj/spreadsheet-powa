@@ -5,9 +5,9 @@
   "keywords": [
     "google",
     "spreadsheet",
-	"edit",
-	"query",
-	"excel"
+    "edit",
+    "query",
+    "excel"
   ],
   "repository": {
     "type": "git",
@@ -17,7 +17,9 @@
     "test": "make test"
   },
   "dependencies": {
-    
+    "google-oauth-jwt": "^0.1.4",
+    "request": "^2.48.0",
+    "utils-merge": "^1.0.0"
   },
   "devDependencies": {
     "mocha": "1.16.2",

@@ -1,1 +1,1 @@
-﻿module.exports = require('./lib/spreadsheetpowa');
+﻿module.exports = require('./libs/spreadsheetpowa');
