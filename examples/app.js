@@ -12,13 +12,13 @@ var server = http.createServer(function (request, response) {
   var spread = new Spreadsheet();
   
   spread.init({
-	email: '',
+	email: '953651403781-7a94m3crdala8d87imj6t3j5od67t1e9@developer.gserviceaccount.com',
     key_file: 'your-key-file.pem'
   });
   
   spread.connect(function() {
 	
-	spread.prepare_database({id: '' }, function(content) {
+	spread.prepare_database({id: '1tsKAhbkzfoKnYZTSKDUqHdqq0CUq9kFQ8zhfifNfZAs' }, function(content) {
 		response.end("Content : " + content);
 	});
 	
