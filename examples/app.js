@@ -18,11 +18,18 @@ var server = http.createServer(function (request, response) {
   
   spread.connect(function() {
 	
-	spread.prepare_database({id: '1tsKAhbkzfoKnYZTSKDUqHdqq0CUq9kFQ8zhfifNfZAs' }, function(content) {
-		response.end("Content : " + content);
-	});
+      spread.prepare_database({ id: '1tsKAhbkzfoKnYZTSKDUqHdqq0CUq9kFQ8zhfifNfZAs' },
+          function (content) {
+              response.end("Content : " + content);
+          }, 
+          function (error) {
+              response.end("Content Error: " + error);
+          });
 	
-  });
+  },
+    function (error) {
+        response.end("Content Error: " + error);
+    });
 });
 
 // Listen on port 8000, IP defaults to 127.0.0.1
