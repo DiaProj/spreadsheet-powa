@@ -89,7 +89,31 @@ exports.prototype.connect = function(callback, error_callback) {
 };
 
 /*
-	@summary: Prepara database (request to get all worksheet id, columns)
+	@summary: Load list of available databases
+*/
+exports.prototype.get_databases = function () {
+    //Url to use : worksheets/private/full
+    var self = this;	
+    var options = self.get_option_get('worksheets/private/full',
+									  self.config.current_token);
+									  
+    request_http(options, function (err, response, body) {
+        if (!err) {
+            // TODO: 10, EB, to be finished, return list of databases
+        }
+    });
+}
+
+/*
+	@summary: Gets database information (id, name, author, ...)
+	@params{name}: Name of the searching database
+*/
+exports.prototype.get_database_informations = function(name) {
+    // TODO: 00, EB, to be created
+}
+
+/*
+	@summary: Prepare database (request to get all worksheet id, columns)
 	@params{options}: Options to request worksheet
 	@params{callback}: Success callback
 	@params{error_callback}: Error callback
