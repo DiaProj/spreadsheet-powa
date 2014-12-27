@@ -16,21 +16,21 @@ var server = http.createServer(function (request, response) {
     key_file: 'your-key-file.pem'
   });
   
-  spread.connect(function() {
-	
-      spread.prepare_database({ id: '1tsKAhbkzfoKnYZTSKDUqHdqq0CUq9kFQ8zhfifNfZAs' },
-          function (content) {
-              response.end("Content : " + content);
-          }, 
-          function (error) {
-              response.end("Content Error: " + error);
-          });
-	
-  },
+  spread.connect(load_database,
     function (error) {
         response.end("Content Error: " + error);
     });
 });
+
+function load_database() {
+	spread.prepare_database({ id: '1tsKAhbkzfoKnYZTSKDUqHdqq0CUq9kFQ8zhfifNfZAs' },
+	  function (content) {
+		response.end("Content : " + content);
+	  }, 
+	  function (error) {
+		  response.end("Content Error: " + error);
+	});
+}
 
 // Listen on port 8000, IP defaults to 127.0.0.1
 server.listen(8000);

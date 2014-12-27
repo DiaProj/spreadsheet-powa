@@ -167,7 +167,7 @@ exports.prototype.prepare_database = function(options, callback, error_callback)
 exports.prototype.request = function(options, callback, error_callback) {
 	var self = this;
 
-	var options = self.get_option_get('list/' + options.id + '/oelo443/private/full?sq=usdescription<>""',
+	var options = self.get_option_get('list/' + options.id + '/' + options.table_name + '/private/full?sq=' + options.query,
 									  self.config.current_token);
 
 	request_http(options, function(err, response, body) {
