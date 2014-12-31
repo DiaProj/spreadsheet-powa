@@ -14,6 +14,7 @@ var exports = module.exports = function spreadsheetpowa(options) {
 
 util.inherits(exports, EventEmitter);
 
+exports.prototype.databases = null;
 exports.prototype.database = null;
 
 exports.prototype.config = {
@@ -78,29 +79,38 @@ exports.prototype.connect = function(callback, error_callback) {
         keyFile: self.config.key_file,
         scopes: self.config.scopes
     }, function (err, token) {
-        if (!err) {
-			self.config.current_token = token;		
-			if(callback != null && typeof(callback) != 'undefined' && typeof(callback) === 'function')
-				callback();
-		} else if(error_callback != null && typeof(error_callback) != 'undefined' && typeof(error_callback) === 'function') {
-			error_callback(err);
-		}			
+		self.use_callback_or_error(err, callback, error_callback, function() {
+			
+			console.log("eeer : " + token);
+			self.config.current_token = token;
+		});
 	});
 };
 
 /*
 	@summary: Load list of available databases
 */
-exports.prototype.get_databases = function () {
+exports.prototype.get_databases = function (callback, error_callback) {
     //Url to use : worksheets/private/full
     var self = this;	
     var options = self.get_option_get('worksheets/private/full',
 									  self.config.current_token);
 									  
     request_http(options, function (err, response, body) {
-        if (!err) {
-            // TODO: 10, EB, to be finished, return list of databases
-        }
+		self.use_callback_or_error(err, function() { callback(self.databases); }, error_callback, function() {
+				
+			console.log(body);	
+				
+			parse_string(body, function (err, result) {
+		        if (err == null) {
+					self.databases = [];
+					
+					for (var i = 0; i < result.feeds.length; i++) {
+						console.log(result.feeds[i]);
+					}
+				}
+			});
+		});
     });
 }
 
@@ -182,3 +192,21 @@ exports.prototype.request = function(options, callback, error_callback) {
 	});
 };
 
+/*
+	@summary: Call back callback success function or, with error, call error function
+	@params{err}: Error object
+	@params{callback}: Success callback
+	@params{error_callback}: Error callback
+	@params{next}: Other function to be called when success (called before callback method)
+*/
+exports.prototype.use_callback_or_error = function(err, callback, error_callback, next) {
+	if (!err) {
+		if(next != null && typeof(next) != 'undefined' && typeof(next) === 'function')
+			next();
+			
+		if(callback != null && typeof(callback) != 'undefined' && typeof(callback) === 'function')
+			callback();
+	} else if(error_callback != null && typeof(error_callback) != 'undefined' && typeof(error_callback) === 'function') {
+			error_callback(err);
+	}
+}
