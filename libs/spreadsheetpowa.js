@@ -100,27 +100,20 @@ exports.prototype.get_databases = function (callback, error_callback) {
     var options = self.get_option_get('spreadsheets/private/full',
 									  self.config.current_token);
 	
-	console.log("self.config.current_token : " + self.config.current_token);
-									  
     request_http(options, function (err, response, body) {
-		console.log("body : " + body + ", err : " + err);	
-		
 		self.use_callback_or_error(err, function() {callback(self.databases);}, error_callback, function() {
 			parse_string(body, function (err, result) {
 	
 		        if (err == null) {
 					self.databases = [];
 					
-					console.log("result.feeds.entry.length : " + result.feed.entry.length);
-					
 					for (var i = 0; i < result.feed.entry.length; i++) {
-						console.log(result.feed.entry[i]);
 						self.databases.push({
-							
+							id: result.feed.entry[i].id[0].replace(SPREADSHEET_SCOPE + '/spreadsheets/', ''),
+							name: result.feed.entry[i].title[0],
+							tables: []
 						});
 					}
-					
-					console.log("self.databases : " + self.databases.length);
 				}
 			});
 		});
@@ -137,38 +130,24 @@ exports.prototype.get_database_informations = function(name) {
 
 /*
 	@summary: Prepare database (request to get all worksheet id, columns)
-	@params{options}: Options to request worksheet
+	@params{database}: Database to be loaded (class Database : { id, name})
 	@params{callback}: Success callback
 	@params{error_callback}: Error callback
 */
-exports.prototype.prepare_database = function(options, callback, error_callback) {
+exports.prototype.prepare_database = function(database, callback, error_callback) {
 	//Url to use : worksheets/key/private/full
 	var self = this;	
-	var options = self.get_option_get('worksheets/' + options.id + '/private/full',
+	var options = self.get_option_get('worksheets/' + database.id + '/private/full',
 									  self.config.current_token);
 									  
 	request_http(options, function(err, response, body) {
 		if (!err) {
 		    parse_string(body, function (err, result) {
 		        if (err == null) {
-		            self.database = {
-		                tables: []
-		            };
+		            self.database = database;
 
 		            for (var i = 0; i < result.feed.entry.length; i++) {
 		                var entry = result.feed.entry[i];
-
-		                if (entry.id.length > 0) {
-		                    var url_get_id = entry.id[0];
-		                    var database = {
-		                        url: url_get_id,
-		                        id: url_get_id.replace(SPREADSHEET_SCOPE + "/worksheets/" + options.id + "/", "")
-		                    };
-
-		                    console.log(database.id);
-
-		                    self.database.tables.push(database);
-		                }
 		            }
 		        }
 

@@ -20,10 +20,8 @@ var server = http.createServer(function (request, response) {
 });
 
 function load_databases(respons) {
-	console.log("before get databases, token : " + spread.config.current_token);
-	
 	spread.get_databases(function(databases) {
-		respons.end("ee, databases : " + databases + ", length : " + databases.length);
+		respons.end("ee, databases : " + databases + ", length : " + databases[0].id + ', name : ' + databases[0].name);
 	});
 }
 
