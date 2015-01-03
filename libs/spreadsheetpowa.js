@@ -45,9 +45,12 @@ exports.prototype.set_token = function (token) {
 
 exports.prototype.get_option_get = function(url, token) {
 	var self = this;
-
+	var formatted_url = SPREADSHEET_SCOPE + '/' + url;
+	
+	console.log("formatted_url : " + formatted_url);
+	
 	return {
-		url: SPREADSHEET_SCOPE + '/' + url,
+		url: formatted_url,
 		method: 'GET',
 		headers: self.set_token({
 			token: token   
@@ -74,14 +77,15 @@ exports.prototype.init = function(options) {
 exports.prototype.connect = function(callback, error_callback) {
 	var self = this;
 
+	console.log("connecting");
+	
 	google_oauth.authenticate({
         email: self.config.email,
         keyFile: self.config.key_file,
         scopes: self.config.scopes
     }, function (err, token) {
+		console.log("getting token : " + token);
 		self.use_callback_or_error(err, callback, error_callback, function() {
-			
-			console.log("eeer : " + token);
 			self.config.current_token = token;
 		});
 	});
@@ -91,23 +95,32 @@ exports.prototype.connect = function(callback, error_callback) {
 	@summary: Load list of available databases
 */
 exports.prototype.get_databases = function (callback, error_callback) {
-    //Url to use : worksheets/private/full
+    //Url to use : feeds/spreadsheets/private/full
     var self = this;	
-    var options = self.get_option_get('worksheets/private/full',
+    var options = self.get_option_get('spreadsheets/private/full',
 									  self.config.current_token);
+	
+	console.log("self.config.current_token : " + self.config.current_token);
 									  
     request_http(options, function (err, response, body) {
-		self.use_callback_or_error(err, function() { callback(self.databases); }, error_callback, function() {
-				
-			console.log(body);	
-				
+		console.log("body : " + body + ", err : " + err);	
+		
+		self.use_callback_or_error(err, function() {callback(self.databases);}, error_callback, function() {
 			parse_string(body, function (err, result) {
+	
 		        if (err == null) {
 					self.databases = [];
 					
-					for (var i = 0; i < result.feeds.length; i++) {
-						console.log(result.feeds[i]);
+					console.log("result.feeds.entry.length : " + result.feed.entry.length);
+					
+					for (var i = 0; i < result.feed.entry.length; i++) {
+						console.log(result.feed.entry[i]);
+						self.databases.push({
+							
+						});
 					}
+					
+					console.log("self.databases : " + self.databases.length);
 				}
 			});
 		});
@@ -201,11 +214,15 @@ exports.prototype.request = function(options, callback, error_callback) {
 */
 exports.prototype.use_callback_or_error = function(err, callback, error_callback, next) {
 	if (!err) {
-		if(next != null && typeof(next) != 'undefined' && typeof(next) === 'function')
+		if(next != null && typeof(next) != 'undefined' && typeof(next) === 'function') {
+			console.log("nex will call");
 			next();
+		}
 			
-		if(callback != null && typeof(callback) != 'undefined' && typeof(callback) === 'function')
+		if(callback != null && typeof(callback) != 'undefined' && typeof(callback) === 'function') {
+			console.log("callback will call");
 			callback();
+		}
 	} else if(error_callback != null && typeof(error_callback) != 'undefined' && typeof(error_callback) === 'function') {
 			error_callback(err);
 	}

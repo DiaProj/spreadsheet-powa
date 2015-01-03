@@ -1,7 +1,5 @@
 global.__base = __dirname + '/';
 
-console.log(global.__base);
-
 var http = require('http');
 var Spreadsheet = require(__base + '../spreadhseet-powa');
 var options = {};
@@ -11,7 +9,6 @@ var spread = new Spreadsheet();
 var server = http.createServer(function (request, response) {
   response.writeHead(200, {"Content-Type": "text/plain"});
   
-  
   spread.init({
 	email: '953651403781-7a94m3crdala8d87imj6t3j5od67t1e9@developer.gserviceaccount.com',
     key_file: 'your-key-file.pem'
@@ -19,14 +16,14 @@ var server = http.createServer(function (request, response) {
   
   console.log("after init");
   
-  spread.connect(load_databases(response), on_error);
+  spread.connect(load_databases.bind(null, response), on_error);
 });
 
-function load_databases(response) {
+function load_databases(respons) {
 	console.log("before get databases, token : " + spread.config.current_token);
 	
 	spread.get_databases(function(databases) {
-		response.end("ee, databases : " + databases + ", length : " + databases.length);
+		respons.end("ee, databases : " + databases + ", length : " + databases.length);
 	});
 }
 
