@@ -173,7 +173,27 @@ exports.prototype.prepare_database = function(database, callback, error_callback
 	@params{error_callback}: Error callback
 */
 exports.prototype.prepare_table = function(database, table, callback, error_callback) {
-	callback();
+	// Url to use :  cells/{database id}/{table id}/private/full
+	
+	var self = this;	
+	var current_id = database.id;
+	var options = self.get_option_get('cells/' + current_id + '/' + table.id + '/private/full',
+									  self.config.current_token);
+									  
+	request_http(options, function(err, response, body) {
+		self.use_callback_or_error(err, function() {}, error_callback, function() {
+			parse_string(body, function (err, result) {
+		        if (err == null) {
+					table.columns = [];
+					
+					for (var i = 0; i < result.feed.entry.length; i++) {
+						
+					}
+				}
+				callback();
+			});
+		});
+	});
 }
 
 /*
