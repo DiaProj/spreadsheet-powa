@@ -15,7 +15,7 @@ var exports = module.exports = function spreadsheetpowa(options) {
 util.inherits(exports, EventEmitter);
 
 exports.prototype.databases = null;
-exports.prototype.database = null;
+exports.prototype.current_database = null;
 
 exports.prototype.config = {
 							email: null,
@@ -47,8 +47,6 @@ exports.prototype.get_option_get = function(url, token) {
 	var self = this;
 	var formatted_url = SPREADSHEET_SCOPE + '/' + url;
 	
-	console.log("formatted_url : " + formatted_url);
-	
 	return {
 		url: formatted_url,
 		method: 'GET',
@@ -76,15 +74,12 @@ exports.prototype.init = function(options) {
 */	
 exports.prototype.connect = function(callback, error_callback) {
 	var self = this;
-
-	console.log("connecting");
 	
 	google_oauth.authenticate({
         email: self.config.email,
         keyFile: self.config.key_file,
         scopes: self.config.scopes
     }, function (err, token) {
-		console.log("getting token : " + token);
 		self.use_callback_or_error(err, callback, error_callback, function() {
 			self.config.current_token = token;
 		});
@@ -102,8 +97,7 @@ exports.prototype.get_databases = function (callback, error_callback) {
 	
     request_http(options, function (err, response, body) {
 		self.use_callback_or_error(err, function() {callback(self.databases);}, error_callback, function() {
-			parse_string(body, function (err, result) {
-	
+			parse_string(body, function (err, result) {	
 		        if (err == null) {
 					self.databases = [];
 					
@@ -135,41 +129,64 @@ exports.prototype.get_database_informations = function(name) {
 	@params{error_callback}: Error callback
 */
 exports.prototype.prepare_database = function(database, callback, error_callback) {
-	//Url to use : worksheets/key/private/full
+	//Url to use : worksheets/{key}/private/full
 	var self = this;	
-	var options = self.get_option_get('worksheets/' + database.id + '/private/full',
+	var current_id = database.id;
+	var options = self.get_option_get('worksheets/' + current_id + '/private/full',
 									  self.config.current_token);
 									  
 	request_http(options, function(err, response, body) {
-		if (!err) {
-		    parse_string(body, function (err, result) {
+		self.use_callback_or_error(err, function() {}, error_callback, function() {
+			parse_string(body, function (err, result) {
 		        if (err == null) {
-		            self.database = database;
-
-		            for (var i = 0; i < result.feed.entry.length; i++) {
+					self.current_database = database;
+					self.current_database.tables = [];
+					
+					for (var i = 0; i < result.feed.entry.length; i++) {
 		                var entry = result.feed.entry[i];
+						var replace_url = SPREADSHEET_SCOPE + '/worksheets/' + current_id + '/';
+						
+						self.current_database.tables.push({
+							id: entry.id[0].replace(replace_url, ''),
+							name: entry.title[0]
+						});
+						
+						self.prepare_table(self.current_database, self.current_database.tables[i], 
+							function() {
+								if(i == result.feed.entry.length -1)
+									callback(self.current_database);
+							}, error_callback, 
+							function() {}
+						);
 		            }
-		        }
-
-			    if (callback != null && typeof (callback) != 'undefined' && typeof (callback) === 'function')
-					callback(result);
+				}
 			});
-		} else if(error_callback != null && typeof(error_callback) != 'undefined' && typeof(error_callback) === 'function') {
-			error_callback(err);
-		}	
+		});
 	});
 };
 
 /*
+	@summary: Request data to one table, to load all meta-data (columns, ...)
+	@params{database}: Database object to request worksheet
+	@params{table}: Table object to request worksheet
+	@params{callback}: Success callback
+	@params{error_callback}: Error callback
+*/
+exports.prototype.prepare_table = function(database, table, callback, error_callback) {
+	callback();
+}
+
+/*
 	@summary: Request data to one worksheet
-	@params{options}: Options to request worksheet
+	@params{database}: Database object to request worksheet
+	@params{table}: Table object to request worksheet
 	@params{callback}: Success callback
 	@params{error_callback}: Error callback
 */	
-exports.prototype.request = function(options, callback, error_callback) {
+exports.prototype.request = function(database, table, callback, error_callback) {
 	var self = this;
 
-	var options = self.get_option_get('list/' + options.id + '/' + options.table_name + '/private/full?sq=' + options.query,
+	var options = self.get_option_get('list/' + database.id + '/' + table.name + '/private/full?sq=' + options.query,
 									  self.config.current_token);
 
 	request_http(options, function(err, response, body) {
@@ -194,12 +211,10 @@ exports.prototype.request = function(options, callback, error_callback) {
 exports.prototype.use_callback_or_error = function(err, callback, error_callback, next) {
 	if (!err) {
 		if(next != null && typeof(next) != 'undefined' && typeof(next) === 'function') {
-			console.log("nex will call");
 			next();
 		}
 			
 		if(callback != null && typeof(callback) != 'undefined' && typeof(callback) === 'function') {
-			console.log("callback will call");
 			callback();
 		}
 	} else if(error_callback != null && typeof(error_callback) != 'undefined' && typeof(error_callback) === 'function') {

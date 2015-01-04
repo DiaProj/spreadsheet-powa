@@ -16,8 +16,18 @@ var server = http.createServer(function (request, response) {
   
   console.log("after init");
   
-  spread.connect(load_databases.bind(null, response), on_error);
+  spread.connect(prepare_database.bind(null, response), on_error);
 });
+
+function prepare_database(respons) {
+	var database = {
+		id: '1tsKAhbkzfoKnYZTSKDUqHdqq0CUq9kFQ8zhfifNfZAs'
+	};
+
+	spread.prepare_database(database, function(database) {
+		respons.end("tables[0] : " + database.tables[0].id);
+	});
+}
 
 function load_databases(respons) {
 	spread.get_databases(function(databases) {
