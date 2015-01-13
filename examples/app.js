@@ -25,7 +25,7 @@ function prepare_database(respons) {
 	};
 
 	spread.prepare_database(database, function(database) {
-		respons.end("tables[0] : " + database.tables[0].id);
+		respons.end("tables[0] : " + database.tables[0].columns[0].id);
 	});
 }
 

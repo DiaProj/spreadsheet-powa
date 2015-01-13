@@ -1,4 +1,10 @@
-﻿var EventEmitter = require('events').EventEmitter;
+﻿/*
+	API google spreadsheet : https://developers.google.com/google-apps/spreadsheets/
+
+*/
+
+
+var EventEmitter = require('events').EventEmitter;
 var merge = require('utils-merge');
 var util = require('util');
 var google_oauth = require('google-oauth-jwt');
@@ -174,10 +180,11 @@ exports.prototype.prepare_database = function(database, callback, error_callback
 */
 exports.prototype.prepare_table = function(database, table, callback, error_callback) {
 	// Url to use :  cells/{database id}/{table id}/private/full
+	// Url to use, to know columns of table : cells/{database id}/{table id}/private/full?min-row=1&max-row=1
 	
 	var self = this;	
 	var current_id = database.id;
-	var options = self.get_option_get('cells/' + current_id + '/' + table.id + '/private/full',
+	var options = self.get_option_get('cells/' + current_id + '/' + table.id + '/private/full?min-row=1&max-row=1',
 									  self.config.current_token);
 									  
 	request_http(options, function(err, response, body) {
@@ -187,7 +194,12 @@ exports.prototype.prepare_table = function(database, table, callback, error_call
 					table.columns = [];
 					
 					for (var i = 0; i < result.feed.entry.length; i++) {
-						
+						var entry = result.feed.entry[i];
+						var replace_url = SPREADSHEET_SCOPE + '/worksheets/' + current_id + '/';
+					
+						table.columns.push({
+							id: entry.id[0].replace(replace_url, '')
+						});
 					}
 				}
 				callback();
