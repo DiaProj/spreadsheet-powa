@@ -32,7 +32,7 @@
   "contributors": [
     {
       "name": "Evan Boissonnot",
-      "email": "evanboissonnot@gmail.com"
+      "email": "evanboissonnot@netil.fr"
     }
   ],
   "gitHead": "",
@@ -46,12 +46,12 @@
   "_npmVersion": "0.1.0",
   "_npmUser": {
     "name": "evanboissonnot",
-    "email": "evanboissonnot@gmail.com"
+    "email": "evanboissonnot@netil.fr"
   },
   "maintainers": [
     {
       "name": "evanboissonnot",
-      "email": "evanboissonnot@gmail.com"
+      "email": "evanboissonnot@netil.fr"
     }
   ],
   "dist": {
